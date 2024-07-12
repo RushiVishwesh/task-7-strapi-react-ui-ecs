@@ -1,8 +1,8 @@
 FROM node:18-alpine
 WORKDIR /src/app
+RUN npm install -g yarn
 COPY . .
-RUN npm install
-RUN npm install -g pm2
-RUN npm run build
+RUN yarn install
+RUN yarn build
 EXPOSE 1337
-RUN pm2 start "npm run develop" --name strapi
+CMD ["yarn", "develop"]
