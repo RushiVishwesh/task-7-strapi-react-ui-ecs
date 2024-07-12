@@ -169,7 +169,7 @@ data "aws_network_interface" "interface_tags_react" {
 }
 
 output "public_ip_react" {
-    value = data.aws_network_interface.interface_tags_react.association[0].public_ip
+  value = data.aws_network_interface.interface_tags_react.association[0].public_ip
 }
 
 resource "tls_private_key" "example" {
@@ -183,11 +183,11 @@ resource "aws_key_pair" "terra_key_strapi" {
 }
 
 resource "aws_instance" "strapi_react" {
-  depends_on      = [data.aws_network_interface.interface_tags]
+  depends_on      = [data.aws_network_interface.interface_tags_react]
   ami             = "ami-04a81a99f5ec58529"
   instance_type   = "t2.small"
   key_name        = aws_key_pair.terra_key_strapi.key_name
-  security_groups = [aws_security_group.strapi_terra_sg_vishwesh.name]
+  security_groups = [aws_security_group.strapi_terra_sg_vishwesh_react.name]
   
   connection {
     type        = "ssh"
@@ -214,7 +214,7 @@ resource "aws_instance" "strapi_react" {
       "echo \"  const [contentData, setContentData] = useState(null);\" >> src/App.js",
       "echo \"\" >> src/App.js",
       "echo \"  useEffect(() => {\" >> src/App.js",
-      "echo \"    axios.get('http://${data.aws_network_interface.interface_tags.association[0].public_ip}:1337/api/strapis')\" >> src/App.js",
+      "echo \"    axios.get('http://${data.aws_network_interface.interface_tags_react.association[0].public_ip}:1337/api/strapis')\" >> src/App.js",
       "echo \"      .then(response => {\" >> src/App.js",
       "echo \"        if (response.data && response.data.data && response.data.data.length > 0) {\" >> src/App.js",
       "echo \"          setContentData(response.data.data[0].attributes);\" >> src/App.js",
@@ -227,29 +227,28 @@ resource "aws_instance" "strapi_react" {
       "echo \"      <header className='App-header'>\" >> src/App.js",
       "echo \"        <img src={logo} className='App-logo' alt='logo' />\" >> src/App.js",
       "echo \"        {contentData && (\" >> src/App.js",
-      "echo \"          <div>\" >> src/App.js",
-      "echo \"            <h2>VISHWESH RUSHI</h2>\" >> src/App.js",
-      "echo \"            <p>{contentData.vishwesh}</p>\" >> src/App.js",
-      "echo \"          </div>\" >> src/App.js",
-      "echo \"        )}\" >> src/App.js",
-      "echo \"        <a\" >> src/App.js",
-      "echo \"          className='App-link'\" >> src/App.js",
-      "echo \"          href='https://reactjs.org'\" >> src/App.js",
-      "echo \"          target='_blank'\" >> src/App.js",
-      "echo \"          rel='noopener noreferrer'\" >> src/App.js",
-      "echo \"        >\" >> src/App.js",
-      "echo \"          Learn React\" >> src/App.js",
-      "echo \"        </a>\" >> src/App.js",
-      "echo \"      </header>\" >> src/App.js",
-      "echo \"    </div>\" >> src/App.js",
-      "echo \"  );\" >> src/App.js",
-      "echo \"}\" >> src/App.js",
-      "echo \"\" >> src/App.js",
-      "echo \"export default App;\" >> src/App.js",
-      "npm start"
+      "echo \"          <div>\" >> src\App.js",
+      "echo \"            <h2>VISHWESH RUSHI</h2>\" >> src\App.js",
+      "echo \"            <p>{contentData.vishwesh}</p>\" >> src\App.js",
+      "echo \"          </div>\" >> src\App.js",
+      "echo \"        )}\" >> src\App.js",
+      "echo \"        <a\" >> src\App.js",
+      "echo \"          className='App-link'\" >> src\App.js",
+      "echo \"          href='https://reactjs.org'\" >> src\App.js",
+      "echo \"          target='_blank'\" >> src\App.js",
+      "echo \"          rel='noopener noreferrer'\" >> src\App.js",
+      "echo \"        >\" >> src\App.js",
+      "echo \"          Learn React\" >> src\App.js",
+      "echo \"        </a>\" >> src\App.js",
+      "echo \"      </header>\" >> src\App.js",
+      "echo \"    </div>\" >> src\App.js",
+      "echo \"  );\" >> src\App.js",
+      "echo \"}\" >> src\App.js",
+      "echo \"\" >> src\App.js",
+      "echo \"export default App;\" >> src\App.js",
+      "npm run build"
     ]
   }
-
   tags = {
     Name = "Strapi-nginx-deploy-vishwesh_react"
   }
@@ -297,7 +296,6 @@ resource "null_resource" "certbot_react" {
 }
 
 resource "aws_route53_record" "vishweshrushi-strapi" {
-  depends_on = [null_resource.certbot_react]
   zone_id = "Z06607023RJWXGXD2ZL6M"
   name    = "vishweshrushi-strapi.contentecho.in"
   type    = "A"
@@ -306,7 +304,6 @@ resource "aws_route53_record" "vishweshrushi-strapi" {
 }
 
 resource "aws_route53_record" "vishweshrushi-reactapi" {
-  depends_on = [null_resource.certbot_react]
   zone_id = "Z06607023RJWXGXD2ZL6M"
   name    = "vishweshrushi-reactapi.contentecho.in"
   type    = "A"
