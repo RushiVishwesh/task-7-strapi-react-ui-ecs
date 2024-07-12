@@ -8,7 +8,7 @@ data "aws_vpc" "default_react" {
 
 resource "aws_subnet" "new_subnet_react" {
   vpc_id            = data.aws_vpc.default_react.id
-  cidr_block        = "172.31.96.0/20"
+  cidr_block        = "172.31.112.0/20"
   map_public_ip_on_launch = true
 
   tags = {
