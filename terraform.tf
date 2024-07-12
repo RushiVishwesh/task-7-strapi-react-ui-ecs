@@ -250,13 +250,13 @@ resource "aws_instance" "strapi_react" {
     ]
   }
   tags = {
-    Name = "Strapi-nginx-deploy-vishwesh_react"
+    Name = "Strapi-nginx-deploy-vishwesh-react"
   }
 }
 
 
 resource "null_resource" "certbot_react" {
-  depends_on = [aws_instance.strapi_react.Strapi-nginx-deploy-vishwesh_react]
+  depends_on = [aws_instance.strapi_react.Strapi-nginx-deploy-vishwesh-react]
 
   provisioner "remote-exec" {
     connection {
