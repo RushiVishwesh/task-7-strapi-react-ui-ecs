@@ -274,20 +274,20 @@ resource "null_resource" "certbot_react" {
       "sudo bash -c 'echo \"    listen [::]:80 default_server;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    root /var/www/html;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    index index.html index.htm index.nginx-debian.html;\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    server_name vishweshrushi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    server_name vishweshrushi-strapi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    location / {\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"        proxy_pass http://${data.aws_network_interface.interface_tags.association[0].public_ip}:1337;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"        proxy_pass http://${data.aws_network_interface.interface_tags_react.association[0].public_ip}:1337;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"}\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"server {\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    listen 80;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    listen [::]:80;\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    server_name vishweshrushi-api.contentecho.in;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    server_name vishweshrushi-reactapi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    location / {\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi_react.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    location /api/strapis {\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi_react.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"}\" >> /etc/nginx/sites-available/default'",
       "sudo systemctl restart nginx"
@@ -300,7 +300,7 @@ resource "aws_route53_record" "vishweshrushi-strapi" {
   name    = "vishweshrushi-strapi.contentecho.in"
   type    = "A"
   ttl     = 300
-  records = [data.aws_network_interface.interface_tags.association[0].public_ip]
+  records = [data.aws_network_interface.interface_tags_react.association[0].public_ip]
 }
 
 resource "aws_route53_record" "vishweshrushi-reactapi" {
@@ -318,7 +318,7 @@ output "private_key" {
 }
 
 output "instance_ip" {
-  value = aws_instance.strapi.public_ip
+  value = aws_instance.strapi_react.public_ip
 }
 
 output "subdomain_url_strapi" {
