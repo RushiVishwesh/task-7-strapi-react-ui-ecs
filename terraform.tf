@@ -309,7 +309,7 @@ resource "aws_route53_record" "vishweshrushi-reactapi" {
   name    = "vishweshrushi-reactapi.contentecho.in"
   type    = "A"
   ttl     = 300
-  records = [aws_instance.strapi.public_ip]
+  records = [aws_instance.strapi_react.public_ip]
 }
 
 resource "null_resource" "certbot_react_ui" {
@@ -320,7 +320,7 @@ resource "null_resource" "certbot_react_ui" {
       type        = "ssh"
       user        = "ubuntu"
       private_key = tls_private_key.example.private_key_pem
-      host        = aws_instance.strapi.public_ip
+      host        = aws_instance.strapi_react.public_ip
     }
 
     inline = [
