@@ -12,6 +12,15 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v1
+
+      - name: build docker image
+        run: docker build -t vishweshrushi/strapi:latest .
+
+      - name: login to dockerhub
+        run: echo "${{ secrets.vishweshrushi }}" | docker login -u vishweshrushi --password-stdin
+
+      - name: push docker image to dockerhub
+        run: docker push vishweshrushi/strapi:latest
         
       - name: terraform
         uses: hashicorp/setup-terraform@v1
