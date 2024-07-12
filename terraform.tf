@@ -227,25 +227,25 @@ resource "aws_instance" "strapi_react" {
       "echo \"      <header className='App-header'>\" >> src/App.js",
       "echo \"        <img src={logo} className='App-logo' alt='logo' />\" >> src/App.js",
       "echo \"        {contentData && (\" >> src/App.js",
-      "echo \"          <div>\" >> src\App.js",
-      "echo \"            <h2>VISHWESH RUSHI</h2>\" >> src\App.js",
-      "echo \"            <p>{contentData.vishwesh}</p>\" >> src\App.js",
-      "echo \"          </div>\" >> src\App.js",
-      "echo \"        )}\" >> src\App.js",
-      "echo \"        <a\" >> src\App.js",
-      "echo \"          className='App-link'\" >> src\App.js",
-      "echo \"          href='https://reactjs.org'\" >> src\App.js",
-      "echo \"          target='_blank'\" >> src\App.js",
-      "echo \"          rel='noopener noreferrer'\" >> src\App.js",
-      "echo \"        >\" >> src\App.js",
-      "echo \"          Learn React\" >> src\App.js",
-      "echo \"        </a>\" >> src\App.js",
-      "echo \"      </header>\" >> src\App.js",
-      "echo \"    </div>\" >> src\App.js",
-      "echo \"  );\" >> src\App.js",
-      "echo \"}\" >> src\App.js",
-      "echo \"\" >> src\App.js",
-      "echo \"export default App;\" >> src\App.js",
+      "echo \"          <div>\" >> src/App.js",
+      "echo \"            <h2>VISHWESH RUSHI</h2>\" >> src/App.js",
+      "echo \"            <p>{contentData.vishwesh}</p>\" >> src/App.js",
+      "echo \"          </div>\" >> src/App.js",
+      "echo \"        )}\" >> src/App.js",
+      "echo \"        <a\" >> src/App.js",
+      "echo \"          className='App-link'\" >> src/App.js",
+      "echo \"          href='https://reactjs.org'\" >> src/App.js",
+      "echo \"          target='_blank'\" >> src/App.js",
+      "echo \"          rel='noopener noreferrer'\" >> src/App.js",
+      "echo \"        >\" >> src/App.js",
+      "echo \"          Learn React\" >> src/App.js",
+      "echo \"        </a>\" >> src/App.js",
+      "echo \"      </header>\" >> src/App.js",
+      "echo \"    </div>\" >> src/App.js",
+      "echo \"  );\" >> src/App.js",
+      "echo \"}\" >> src/App.js",
+      "echo \"\" >> src/App.js",
+      "echo \"export default App;\" >> src/App.js",
       "npm run build"
     ]
   }
@@ -253,7 +253,6 @@ resource "aws_instance" "strapi_react" {
     Name = "Strapi-nginx-deploy-vishwesh_react"
   }
 }
-
 
 resource "null_resource" "certbot_react" {
   depends_on = [aws_instance.strapi_react.Strapi-nginx-deploy-vishwesh_react]
