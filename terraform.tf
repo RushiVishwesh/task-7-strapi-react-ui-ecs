@@ -297,6 +297,7 @@ resource "null_resource" "certbot_react" {
 }
 
 resource "aws_route53_record" "vishweshrushi-strapi" {
+  depends_on = [null_resource.certbot_react]
   zone_id = "Z06607023RJWXGXD2ZL6M"
   name    = "vishweshrushi-strapi.contentecho.in"
   type    = "A"
@@ -312,24 +313,6 @@ resource "aws_route53_record" "vishweshrushi-reactapi" {
   records = [aws_instance.strapi_react.public_ip]
 }
 
-resource "null_resource" "certbot_react_ui" {
-  depends_on = [aws_route53_record.vishweshrushi]
-  depends_on = [aws_route53_record.vishweshrushi-api]
-  provisioner "remote-exec" {
-    connection {
-      type        = "ssh"
-      user        = "ubuntu"
-      private_key = tls_private_key.example.private_key_pem
-      host        = aws_instance.strapi_react.public_ip
-    }
-
-    inline = [
-      "sudo apt install certbot python3-certbot-nginx -y",
-      "sudo certbot --nginx -d vishweshrushi.contentecho.in --non-interactive --agree-tos -m rushivishwesh02@gmail.com",
-      "sudo certbot --nginx -d vishweshrushi-api.contentecho.in --non-interactive --agree-tos -m rushivishwesh02@gmail.com"
-    ]
-  }
-}
 
 output "private_key" {
   value     = tls_private_key.example.private_key_pem
@@ -340,10 +323,10 @@ output "instance_ip" {
   value = aws_instance.strapi.public_ip
 }
 
-output "subdomain_url" {
-  value = "http://vishweshrushi.contentecho.in"
+output "subdomain_url_strapi" {
+  value = "http://vishweshrushi-strapi.contentecho.in"
 }
 
-output "subdomain_url" {
-  value = "http://vishweshrushi-api.contentecho.in"
+output "subdomain_url_react" {
+  value = "http://vishweshrushi-reactapi.contentecho.in"
 }
