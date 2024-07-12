@@ -314,9 +314,9 @@ resource "null_resource" "certbot_react" {
       "sudo bash -c 'echo \"    listen [::]:80 default_server;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    root /var/www/html;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    index index.html index.htm index.nginx-debian.html;\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    server_name vishweshrushi-strapi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    server_name vishweshrushi-reactapi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    location / {\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"        proxy_pass http://vishweshrushi-reactapi.contentecho.in:3000;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"        proxy_pass http://localhost:3000;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"}\" >> /etc/nginx/sites-available/default'",
       "sudo systemctl restart nginx"
