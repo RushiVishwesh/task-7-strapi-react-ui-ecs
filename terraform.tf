@@ -200,7 +200,7 @@ resource "aws_instance" "strapi_react" {
     inline = [
       "sudo apt update -y",
       "sudo apt install nodejs npm -y",
-      "npx create-react-app strapi-react-ui",
+      "yes | npx create-react-app strapi-react-ui",
       "cd strapi-react-ui",
       "npm install",
       "npm run build",
@@ -246,7 +246,7 @@ resource "aws_instance" "strapi_react" {
       "echo \"}\" >> src/App.js",
       "echo \"\" >> src/App.js",
       "echo \"export default App;\" >> src/App.js",
-      "npm run build"
+      "npm run develop >> output.log"
     ]
   }
   tags = {
