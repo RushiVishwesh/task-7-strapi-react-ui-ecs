@@ -2,24 +2,24 @@ provider "aws" {
   region = "us-east-1"
 }
 
-data "aws_vpc" "default" {
+data "aws_vpc" "default_react" {
   default = true
 }
 
-resource "aws_subnet" "new_subnet" {
-  vpc_id            = data.aws_vpc.default.id
+resource "aws_subnet" "new_subnet_react" {
+  vpc_id            = data.aws_vpc.default_react.id
   cidr_block        = "172.31.96.0/20"
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "NewSubnet"
+    Name = "NewSubnet_react"
   }
 }
 
-resource "aws_security_group" "strapi_terra_sg_vishwesh" {
-  name        = "strapi_terra_sg_vishwesh"
+resource "aws_security_group" "strapi_terra_sg_vishwesh_react" {
+  name        = "strapi_terra_sg_vishwesh_react"
   description = "Security group for Strapi ECS tasks"
-  vpc_id      = data.aws_vpc.default.id
+  vpc_id      = data.aws_vpc.default_react.id
 
   ingress {
     description = "SSH"
@@ -33,6 +33,14 @@ resource "aws_security_group" "strapi_terra_sg_vishwesh" {
     description = "HTTP"
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    description = "REACT"
+    from_port   = 3000
+    to_port     = 3000
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
@@ -61,12 +69,12 @@ resource "aws_security_group" "strapi_terra_sg_vishwesh" {
   }
 
   tags = {
-    Name = "strapi_terra_sg_vishwesh"
+    Name = "strapi_terra_sg_vishwesh_react"
   }
 }
 
-resource "aws_iam_role" "ecs_task_execution_role" {
-  name = "ecsTaskExecutionRole_vishwesh"
+resource "aws_iam_role" "ecs_task_execution_role_react" {
+  name = "ecsTaskExecutionRole_vishwesh_react"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -82,17 +90,17 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
-  role       = aws_iam_role.ecs_task_execution_role.name
+resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy_react" {
+  role       = aws_iam_role.ecs_task_execution_role_react.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
-resource "aws_ecs_cluster" "strapi_cluster" {
-  name = "strapi-cluster"
+resource "aws_ecs_cluster" "strapi_cluster_react" {
+  name = "strapi-cluster-react"
 }
 
-resource "aws_ecs_task_definition" "strapi_task" {
-  family                   = "strapi-task"
+resource "aws_ecs_task_definition" "strapi_task_react" {
+  family                   = "strapi-task-react"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
@@ -112,14 +120,14 @@ resource "aws_ecs_task_definition" "strapi_task" {
     }
   ])
 
-  execution_role_arn = aws_iam_role.ecs_task_execution_role.arn
-  task_role_arn      = aws_iam_role.ecs_task_execution_role.arn
+  execution_role_arn = aws_iam_role.ecs_task_execution_role_react.arn
+  task_role_arn      = aws_iam_role.ecs_task_execution_role_react.arn
 }
 
-resource "aws_ecs_service" "strapi_service" {
-  name            = "strapi-service"
-  cluster         = aws_ecs_cluster.strapi_cluster.arn
-  task_definition = aws_ecs_task_definition.strapi_task.arn
+resource "aws_ecs_service" "strapi_service_react" {
+  name            = "strapi-service-react"
+  cluster         = aws_ecs_cluster.strapi_cluster_react.arn
+  task_definition = aws_ecs_task_definition.strapi_task_react.arn
   desired_count   = 1
   enable_ecs_managed_tags = true
 
@@ -129,8 +137,8 @@ resource "aws_ecs_service" "strapi_service" {
   }
 
   network_configuration {
-    subnets          = [aws_subnet.new_subnet.id]
-    security_groups  = [aws_security_group.strapi_terra_sg_vishwesh.id]
+    subnets          = [aws_subnet.new_subnet_react.id]
+    security_groups  = [aws_security_group.strapi_terra_sg_vishwesh_react.id]
     assign_public_ip = true
   }
 
@@ -138,30 +146,30 @@ resource "aws_ecs_service" "strapi_service" {
   deployment_minimum_healthy_percent = 100
 
   depends_on = [
-    aws_ecs_task_definition.strapi_task
+    aws_ecs_task_definition.strapi_task_react
   ]
 }
 
-resource "null_resource" "wait_for_eni" {
-  depends_on = [aws_ecs_service.strapi_service]
+resource "null_resource" "wait_for_eni_react" {
+  depends_on = [aws_ecs_service.strapi_service_react]
 
   provisioner "local-exec" {
     command = "sleep 60"
   }
 }
 
-data "aws_network_interface" "interface_tags" {
+data "aws_network_interface" "interface_tags_react" {
   filter {
     name   = "tag:aws:ecs:serviceName"
-    values = ["strapi-service"]
+    values = ["strapi-service-react"]
   }
   depends_on = [
-    null_resource.wait_for_eni
+    null_resource.wait_for_eni_react
   ]
 }
 
-output "public_ip" {
-    value = data.aws_network_interface.interface_tags.association[0].public_ip
+output "public_ip_react" {
+    value = data.aws_network_interface.interface_tags_react.association[0].public_ip
 }
 
 resource "tls_private_key" "example" {
@@ -272,6 +280,17 @@ resource "null_resource" "certbot" {
       "sudo bash -c 'echo \"        proxy_pass http://${data.aws_network_interface.interface_tags.association[0].public_ip}:1337;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"}\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"server {\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    listen 80;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    listen [::]:80;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    server_name vishweshrushi-api.contentecho.in;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    location / {\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    location /api/strapis {\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"}\" >> /etc/nginx/sites-available/default'",
       "sudo systemctl restart nginx"
     ]
   }
@@ -282,7 +301,7 @@ resource "aws_route53_record" "vishweshrushi" {
   name    = "vishweshrushi.contentecho.in"
   type    = "A"
   ttl     = 300
-  records = [aws_instance.strapi.public_ip]
+  records = [${data.aws_network_interface.interface_tags.association[0].public_ip}]
 }
 
 resource "aws_route53_record" "vishweshrushi-api" {
@@ -290,8 +309,9 @@ resource "aws_route53_record" "vishweshrushi-api" {
   name    = "vishweshrushi-api.contentecho.in"
   type    = "A"
   ttl     = 300
-  records = [${data.aws_network_interface.interface_tags.association[0].public_ip}]
+  records = [aws_instance.strapi.public_ip]
 }
+
 resource "null_resource" "certbot" {
   depends_on = [aws_route53_record.vishweshrushi]
   depends_on = [aws_route53_record.vishweshrushi-api]
