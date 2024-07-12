@@ -178,15 +178,15 @@ resource "tls_private_key" "example" {
 }
 
 resource "aws_key_pair" "terra_key_strapi" {
-  key_name   = "terra_key_strapi"
+  key_name   = "terra_key_strapi_react"
   public_key = tls_private_key.example.public_key_openssh
 }
 
 resource "aws_instance" "strapi" {
-  depends_on = [data.aws_network_interface.interface_tags]
-  ami           = "ami-04a81a99f5ec58529"
-  instance_type = "t2.small"
-  key_name      = aws_key_pair.terra_key_strapi.key_name
+  depends_on      = [data.aws_network_interface.interface_tags]
+  ami             = "ami-04a81a99f5ec58529"
+  instance_type   = "t2.small"
+  key_name        = aws_key_pair.terra_key_strapi.key_name
   security_groups = [aws_security_group.strapi_terra_sg_vishwesh.name]
   
   connection {
@@ -198,63 +198,63 @@ resource "aws_instance" "strapi" {
 
   provisioner "remote-exec" {
     inline = [
-      provisioner "remote-exec" {
-  inline = [
-    "sudo apt update -y",
-    "sudo apt install nodejs npm -y",
-    "npx create-react-app strapi-react-ui",
-    "cd strapi-react-ui",
-    "npm install",
-    "npm run build",
-    "rm src/App.js",
-    "echo \"import React, { useState, useEffect } from 'react';\" > src/App.js",
-    "echo \"import logo from './logo.svg';\" >> src/App.js",
-    "echo \"import axios from 'axios';\" >> src/App.js",
-    "echo \"import './App.css';\" >> src/App.js",
-    "echo \"\" >> src/App.js",
-    "echo \"function App() {\" >> src/App.js",
-    "echo \"  const [contentData, setContentData] = useState(null);\" >> src/App.js",
-    "echo \"\" >> src/App.js",
-    "echo \"  useEffect(() => {\" >> src/App.js",
-    "echo \"    axios.get('http://${data.aws_network_interface.interface_tags.association[0].public_ip}:1337/api/strapis')\" >> src/App.js",
-    "echo \"      .then(response => {\" >> src/App.js",
-    "echo \"        if (response.data && response.data.data && response.data.data.length > 0) {\" >> src/App.js",
-    "echo \"          setContentData(response.data.data[0].attributes);\" >> src/App.js",
-    "echo \"        }\" >> src/App.js",
-    "echo \"      });\" >> src/App.js",
-    "echo \"  }, []);\" >> src/App.js",
-    "echo \"\" >> src/App.js",
-    "echo \"  return (\" >> src/App.js",
-    "echo \"    <div className='App'>\" >> src/App.js",
-    "echo \"      <header className='App-header'>\" >> src/App.js",
-    "echo \"        <img src={logo} className='App-logo' alt='logo' />\" >> src/App.js",
-    "echo \"        {contentData && (\" >> src/App.js",
-    "echo \"          <div>\" >> src/App.js",
-    "echo \"            <h2>VISHWESH RUSHI</h2>\" >> src/App.js",
-    "echo \"            <p>{contentData.vishwesh}</p>\" >> src/App.js",
-    "echo \"          </div>\" >> src/App.js",
-    "echo \"        )}\" >> src/App.js",
-    "echo \"        <a\" >> src/App.js",
-    "echo \"          className='App-link'\" >> src/App.js",
-    "echo \"          href='https://reactjs.org'\" >> src/App.js",
-    "echo \"          target='_blank'\" >> src/App.js",
-    "echo \"          rel='noopener noreferrer'\" >> src/App.js",
-    "echo \"        >\" >> src/App.js",
-    "echo \"          Learn React\" >> src/App.js",
-    "echo \"        </a>\" >> src/App.js",
-    "echo \"      </header>\" >> src/App.js",
-    "echo \"    </div>\" >> src/App.js",
-    "echo \"  );\" >> src/App.js",
-    "echo \"}\" >> src/App.js",
-    "echo \"\" >> src/App.js",
-    "echo \"export default App;\" >> src/App.js",
-    "npm start"
+      "sudo apt update -y",
+      "sudo apt install nodejs npm -y",
+      "npx create-react-app strapi-react-ui",
+      "cd strapi-react-ui",
+      "npm install",
+      "npm run build",
+      "rm src/App.js",
+      "echo \"import React, { useState, useEffect } from 'react';\" > src/App.js",
+      "echo \"import logo from './logo.svg';\" >> src/App.js",
+      "echo \"import axios from 'axios';\" >> src/App.js",
+      "echo \"import './App.css';\" >> src/App.js",
+      "echo \"\" >> src/App.js",
+      "echo \"function App() {\" >> src/App.js",
+      "echo \"  const [contentData, setContentData] = useState(null);\" >> src/App.js",
+      "echo \"\" >> src/App.js",
+      "echo \"  useEffect(() => {\" >> src/App.js",
+      "echo \"    axios.get('http://${data.aws_network_interface.interface_tags.association[0].public_ip}:1337/api/strapis')\" >> src/App.js",
+      "echo \"      .then(response => {\" >> src/App.js",
+      "echo \"        if (response.data && response.data.data && response.data.data.length > 0) {\" >> src/App.js",
+      "echo \"          setContentData(response.data.data[0].attributes);\" >> src/App.js",
+      "echo \"        }\" >> src/App.js",
+      "echo \"      });\" >> src/App.js",
+      "echo \"  }, []);\" >> src/App.js",
+      "echo \"\" >> src/App.js",
+      "echo \"  return (\" >> src/App.js",
+      "echo \"    <div className='App'>\" >> src/App.js",
+      "echo \"      <header className='App-header'>\" >> src/App.js",
+      "echo \"        <img src={logo} className='App-logo' alt='logo' />\" >> src/App.js",
+      "echo \"        {contentData && (\" >> src/App.js",
+      "echo \"          <div>\" >> src/App.js",
+      "echo \"            <h2>VISHWESH RUSHI</h2>\" >> src/App.js",
+      "echo \"            <p>{contentData.vishwesh}</p>\" >> src/App.js",
+      "echo \"          </div>\" >> src/App.js",
+      "echo \"        )}\" >> src/App.js",
+      "echo \"        <a\" >> src/App.js",
+      "echo \"          className='App-link'\" >> src/App.js",
+      "echo \"          href='https://reactjs.org'\" >> src/App.js",
+      "echo \"          target='_blank'\" >> src/App.js",
+      "echo \"          rel='noopener noreferrer'\" >> src/App.js",
+      "echo \"        >\" >> src/App.js",
+      "echo \"          Learn React\" >> src/App.js",
+      "echo \"        </a>\" >> src/App.js",
+      "echo \"      </header>\" >> src/App.js",
+      "echo \"    </div>\" >> src/App.js",
+      "echo \"  );\" >> src/App.js",
+      "echo \"}\" >> src/App.js",
+      "echo \"\" >> src/App.js",
+      "echo \"export default App;\" >> src/App.js",
+      "npm start"
     ]
   }
+
   tags = {
     Name = "Strapi-nginx-deploy-vishwesh_react"
   }
 }
+
 
 resource "null_resource" "certbot" {
   depends_on = [aws_instance.strapi.Strapi-nginx-deploy-vishwesh_react]
@@ -301,7 +301,7 @@ resource "aws_route53_record" "vishweshrushi" {
   name    = "vishweshrushi.contentecho.in"
   type    = "A"
   ttl     = 300
-  records = [${data.aws_network_interface.interface_tags.association[0].public_ip}]
+  records = [data.aws_network_interface.interface_tags.association[0].public_ip]
 }
 
 resource "aws_route53_record" "vishweshrushi-api" {
