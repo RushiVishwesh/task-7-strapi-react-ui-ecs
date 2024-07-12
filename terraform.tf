@@ -117,6 +117,22 @@ resource "aws_ecs_task_definition" "strapi_task_react" {
           hostPort      = 1337
         }
       ]
+    },
+    {
+      name      = "nginx"
+      image     = "nginx:latest"
+      essential = true
+      portMappings = [
+        {
+          containerPort = 80
+          hostPort      = 80
+        }
+      ]
+      command = [
+        "sh",
+        "-c",
+        "echo 'events {} http { server { listen 80; location / { proxy_pass http://localhost:1337; } } }' > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+      ]
     }
   ])
 
@@ -289,9 +305,6 @@ resource "null_resource" "certbot_react" {
       "sudo bash -c 'echo \"    index index.html index.htm index.nginx-debian.html;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    server_name vishweshrushi-strapi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    location / {\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi_react.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    location /api/strapis {\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi_react.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"}\" >> /etc/nginx/sites-available/default'",
