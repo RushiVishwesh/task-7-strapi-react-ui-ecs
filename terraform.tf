@@ -254,6 +254,7 @@ resource "aws_instance" "strapi_react" {
   }
 }
 
+
 resource "null_resource" "certbot_react" {
   depends_on = [aws_instance.strapi_react.Strapi-nginx-deploy-vishwesh_react]
 
