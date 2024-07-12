@@ -172,6 +172,18 @@ output "public_ip_react" {
   value = data.aws_network_interface.interface_tags_react.association[0].public_ip
 }
 
+resource "aws_route53_record" "vishweshrushi-strapi" {
+  zone_id = "Z06607023RJWXGXD2ZL6M"
+  name    = "vishweshrushi-strapi.contentecho.in"
+  type    = "A"
+  ttl     = 300
+  records = [data.aws_network_interface.interface_tags_react.association[0].public_ip]
+
+  depends_on = [
+    data.aws_network_interface.interface_tags_react
+  ]
+}
+
 resource "tls_private_key" "example" {
   algorithm = "RSA"
   rsa_bits  = 4096
@@ -183,7 +195,7 @@ resource "aws_key_pair" "terra_key_strapi" {
 }
 
 resource "aws_instance" "strapi_react" {
-  depends_on      = [data.aws_network_interface.interface_tags_react]
+  depends_on      = [aws_route53_record.vishweshrushi-strapi]
   ami             = "ami-04a81a99f5ec58529"
   instance_type   = "t2.small"
   key_name        = aws_key_pair.terra_key_strapi.key_name
@@ -214,7 +226,7 @@ resource "aws_instance" "strapi_react" {
       "echo \"  const [contentData, setContentData] = useState(null);\" >> src/App.js",
       "echo \"\" >> src/App.js",
       "echo \"  useEffect(() => {\" >> src/App.js",
-      "echo \"    axios.get('http://${data.aws_network_interface.interface_tags_react.association[0].public_ip}:1337/api/strapis')\" >> src/App.js",
+      "echo \"    axios.get('http://vishweshrushi-strapi.contentecho.in:1337/api/strapis')\" >> src/App.js",
       "echo \"      .then(response => {\" >> src/App.js",
       "echo \"        if (response.data && response.data.data && response.data.data.length > 0) {\" >> src/App.js",
       "echo \"          setContentData(response.data.data[0].attributes);\" >> src/App.js",
@@ -277,14 +289,6 @@ resource "null_resource" "certbot_react" {
       "sudo bash -c 'echo \"    index index.html index.htm index.nginx-debian.html;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    server_name vishweshrushi-strapi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    location / {\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"        proxy_pass http://${data.aws_network_interface.interface_tags_react.association[0].public_ip}:1337;\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"}\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"server {\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    listen 80;\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    listen [::]:80;\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    server_name vishweshrushi-reactapi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"    location / {\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi_react.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    location /api/strapis {\" >> /etc/nginx/sites-available/default'",
@@ -294,14 +298,6 @@ resource "null_resource" "certbot_react" {
       "sudo systemctl restart nginx"
     ]
   }
-}
-
-resource "aws_route53_record" "vishweshrushi-strapi" {
-  zone_id = "Z06607023RJWXGXD2ZL6M"
-  name    = "vishweshrushi-strapi.contentecho.in"
-  type    = "A"
-  ttl     = 300
-  records = [data.aws_network_interface.interface_tags_react.association[0].public_ip]
 }
 
 resource "aws_route53_record" "vishweshrushi-reactapi" {
