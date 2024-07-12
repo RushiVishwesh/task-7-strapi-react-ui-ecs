@@ -306,6 +306,7 @@ resource "aws_route53_record" "vishweshrushi-strapi" {
 }
 
 resource "aws_route53_record" "vishweshrushi-reactapi" {
+  depends_on = [null_resource.certbot_react]
   zone_id = "Z06607023RJWXGXD2ZL6M"
   name    = "vishweshrushi-reactapi.contentecho.in"
   type    = "A"
