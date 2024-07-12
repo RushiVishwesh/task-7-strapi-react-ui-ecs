@@ -283,9 +283,20 @@ resource "aws_instance" "strapi_react" {
   }
 }
 
+resource "aws_route53_record" "vishweshrushi-reactapi" {
+  zone_id = "Z06607023RJWXGXD2ZL6M"
+  name    = "vishweshrushi-reactapi.contentecho.in"
+  type    = "A"
+  ttl     = 300
+  records = [aws_instance.strapi_react.public_ip]
+
+  depends_on = [
+    aws_instance.strapi_react
+  ]
+}
 
 resource "null_resource" "certbot_react" {
-  depends_on = [aws_instance.strapi_react]
+  depends_on = [aws_route53_record.vishweshrushi-reactapi]
 
   provisioner "remote-exec" {
     connection {
@@ -305,20 +316,12 @@ resource "null_resource" "certbot_react" {
       "sudo bash -c 'echo \"    index index.html index.htm index.nginx-debian.html;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    server_name vishweshrushi-strapi.contentecho.in;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    location / {\" >> /etc/nginx/sites-available/default'",
-      "sudo bash -c 'echo \"        proxy_pass http://${aws_instance.strapi_react.public_ip}:3000;\" >> /etc/nginx/sites-available/default'",
+      "sudo bash -c 'echo \"        proxy_pass http://vishweshrushi-reactapi.contentecho.in:3000;\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"    }\" >> /etc/nginx/sites-available/default'",
       "sudo bash -c 'echo \"}\" >> /etc/nginx/sites-available/default'",
       "sudo systemctl restart nginx"
     ]
   }
-}
-
-resource "aws_route53_record" "vishweshrushi-reactapi" {
-  zone_id = "Z06607023RJWXGXD2ZL6M"
-  name    = "vishweshrushi-reactapi.contentecho.in"
-  type    = "A"
-  ttl     = 300
-  records = [aws_instance.strapi_react.public_ip]
 }
 
 
