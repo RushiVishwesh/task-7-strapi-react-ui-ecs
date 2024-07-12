@@ -182,7 +182,7 @@ resource "aws_key_pair" "terra_key_strapi" {
   public_key = tls_private_key.example.public_key_openssh
 }
 
-resource "aws_instance" "strapi" {
+resource "aws_instance" "strapi_react" {
   depends_on      = [data.aws_network_interface.interface_tags]
   ami             = "ami-04a81a99f5ec58529"
   instance_type   = "t2.small"
@@ -256,15 +256,15 @@ resource "aws_instance" "strapi" {
 }
 
 
-resource "null_resource" "certbot" {
-  depends_on = [aws_instance.strapi.Strapi-nginx-deploy-vishwesh_react]
+resource "null_resource" "certbot_react" {
+  depends_on = [aws_instance.strapi_react.Strapi-nginx-deploy-vishwesh_react]
 
   provisioner "remote-exec" {
     connection {
       type        = "ssh"
       user        = "ubuntu"
       private_key = tls_private_key.example.private_key_pem
-      host        = aws_instance.strapi.public_ip
+      host        = aws_instance.strapi_react.public_ip
     }
 
     inline = [
@@ -296,23 +296,23 @@ resource "null_resource" "certbot" {
   }
 }
 
-resource "aws_route53_record" "vishweshrushi" {
+resource "aws_route53_record" "vishweshrushi-strapi" {
   zone_id = "Z06607023RJWXGXD2ZL6M"
-  name    = "vishweshrushi.contentecho.in"
+  name    = "vishweshrushi-strapi.contentecho.in"
   type    = "A"
   ttl     = 300
   records = [data.aws_network_interface.interface_tags.association[0].public_ip]
 }
 
-resource "aws_route53_record" "vishweshrushi-api" {
+resource "aws_route53_record" "vishweshrushi-reactapi" {
   zone_id = "Z06607023RJWXGXD2ZL6M"
-  name    = "vishweshrushi-api.contentecho.in"
+  name    = "vishweshrushi-reactapi.contentecho.in"
   type    = "A"
   ttl     = 300
   records = [aws_instance.strapi.public_ip]
 }
 
-resource "null_resource" "certbot" {
+resource "null_resource" "certbot_react_ui" {
   depends_on = [aws_route53_record.vishweshrushi]
   depends_on = [aws_route53_record.vishweshrushi-api]
   provisioner "remote-exec" {
@@ -325,7 +325,7 @@ resource "null_resource" "certbot" {
 
     inline = [
       "sudo apt install certbot python3-certbot-nginx -y",
-      "sudo certbot --nginx -d vishweshrushi.contentecho.in --non-interactive --agree-tos -m rushivishwesh02@gmail.com"
+      "sudo certbot --nginx -d vishweshrushi.contentecho.in --non-interactive --agree-tos -m rushivishwesh02@gmail.com",
       "sudo certbot --nginx -d vishweshrushi-api.contentecho.in --non-interactive --agree-tos -m rushivishwesh02@gmail.com"
     ]
   }
