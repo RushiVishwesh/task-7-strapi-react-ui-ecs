@@ -131,11 +131,10 @@ resource "aws_ecs_task_definition" "strapi_task_react" {
       command = [
         "sh",
         "-c",
-        "echo 'events {} http { server { listen 80; location / { proxy_pass http://vishweshrushi-strapi.contentecho.in:1337; } } }' > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
+        "echo 'events {} http { server { listen 80; location / { proxy_pass http://localhost:1337; } } }' > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"
       ]
     }
   ])
-
   execution_role_arn = aws_iam_role.ecs_task_execution_role_react.arn
   task_role_arn      = aws_iam_role.ecs_task_execution_role_react.arn
 }
